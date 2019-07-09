@@ -1,0 +1,2 @@
+let <identifier> = <expression>;
+return <expression>;
