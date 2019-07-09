@@ -5,6 +5,14 @@ import com.github.monkeyj.Token;
 public abstract class Node {
     protected Token token;
 
+    public Node() {
+
+    }
+
+    public Node(Token token) {
+        this.token = token;
+    }
+
     public Token getToken() {
         return token;
     }
@@ -13,5 +21,9 @@ public abstract class Node {
         this.token = token;
     }
 
-    public abstract String tokenLiteral();
+    public String tokenLiteral() {
+        return token.getLiteral();
+    }
+
+
 }

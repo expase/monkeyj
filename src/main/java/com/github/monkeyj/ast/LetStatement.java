@@ -6,6 +6,8 @@ public class LetStatement extends Statement {
     private Identifier name;
     private Expression value;
 
+    public LetStatement() {
+    }
     public Identifier getName() {
         return name;
     }
@@ -28,5 +30,17 @@ public class LetStatement extends Statement {
 
     public void statementNode() {
 
+    }
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(tokenLiteral()).append(" ");
+        buf.append(name.toString());
+        buf.append(" = ");
+        if (value != null) {
+            buf.append(value.toString());
+        }
+        buf.append(";");
+
+        return buf.toString();
     }
 }

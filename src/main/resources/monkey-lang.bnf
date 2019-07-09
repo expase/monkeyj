@@ -1,2 +1,4 @@
-let <identifier> = <expression>;
-return <expression>;
+let := 'let' <identifier> '=' <expression>;
+return := 'return' <expression>;
+expression := <infix-expression> | <prefix-expression> | <call-expression>;
+

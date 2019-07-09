@@ -2,16 +2,14 @@ package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
 
-public class Identifier implements Expression {
+public class Identifier extends Expression {
     private Token token;
     private String value;
 
-    public Identifier() {
 
-    }
 
     public Identifier(Token token, String value) {
-        this.token = token;
+        super(token);
         this.value = value;
     }
 
@@ -21,5 +19,9 @@ public class Identifier implements Expression {
 
     public void expressionNode() {
 
+    }
+
+    public String toString() {
+        return value;
     }
 }

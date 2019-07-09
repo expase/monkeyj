@@ -5,6 +5,10 @@ import com.github.monkeyj.Token;
 public class ReturnStatement extends Statement {
     private Expression returnValue;
 
+    public ReturnStatement(Token token) {
+        super(token);
+    }
+
     public Expression getReturnValue() {
         return returnValue;
     }
@@ -18,7 +22,15 @@ public class ReturnStatement extends Statement {
 
     }
 
-    public String tokenLiteral() {
-        return token.getLiteral();
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append(tokenLiteral() + " ");
+        if (returnValue != null) {
+            out.append(returnValue.toString());
+        }
+        out.append(";");
+        return out.toString();
     }
+
+
 }
