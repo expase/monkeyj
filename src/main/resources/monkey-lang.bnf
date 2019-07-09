@@ -1,4 +1,6 @@
 let := 'let' <identifier> '=' <expression>;
 return := 'return' <expression>;
 expression := <infix-expression> | <prefix-expression> | <call-expression>;
+prefix-expression := <prefix-operator><expression>;
+prefix-operator := '-'|'!'
 

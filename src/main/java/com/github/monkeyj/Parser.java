@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
-import static com.github.monkeyj.Parser.Precedence.LOWEST;
+import static com.github.monkeyj.Parser.Precedence.*;
 import static com.github.monkeyj.TokenType.*;
 
 
@@ -37,12 +39,40 @@ public class Parser {
     private Map<TokenType, PrefixExprParser> prefixParsers = new HashMap<>();
     private Map<TokenType, InfixExprParser> infixParsers = new HashMap<>();
     private List<String> errors = new ArrayList<>();
+    private Map<TokenType, Precedence> precedences = Stream.of(
+            new Object[][]{
+                    {EQ, EQUALS},
+                    {NOT_EQ, EQUALS},
+                    {LT, LESSGREATER},
+                    {GT, LESSGREATER},
+                    {PLUS, SUM},
+                    {MINUS, SUM},
+                    {SLASH, PRODUCT},
+                    {ASTERISK, PRODUCT},
+                    {LPAREN, CALL}
+            }
+    ).collect(Collectors.toMap(data -> (TokenType) data[0], data -> (Precedence) data[1]));
 
-    private void registerPrefix(TokenType type,PrefixExprParser fn) {
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    private void registerPrefix(TokenType type, PrefixExprParser fn) {
         prefixParsers.put(type, fn);
     }
     private void registerInfix(TokenType type,InfixExprParser fn) {
         infixParsers.put(type, fn);
+    }
+    private Precedence peekPrecedence() {
+        return precedences.getOrDefault(peekToken.getType(), LOWEST);
+    }
+
+    private Precedence curPrecedence() {
+        return precedences.getOrDefault(curToken.getType(), LOWEST);
+    }
+
+    private void noPrefixParserError(TokenType type) {
+        addError(String.format("no prefix parser function for %s found", type.name()));
     }
 
     public Parser(Lexer lexer) {
@@ -52,7 +82,17 @@ public class Parser {
 
         registerPrefix(IDENT, this::parseIdentifier);
         registerPrefix(INT, this::parseIntegerLiteral);
+        registerPrefix(BANG, this::parsePrefixExpression);
+        registerPrefix(MINUS, this::parsePrefixExpression);
 
+        registerInfix(PLUS, this::parseInfixExpression);
+        registerInfix(MINUS, this::parseInfixExpression);
+        registerInfix(SLASH, this::parseInfixExpression);
+        registerInfix(ASTERISK, this::parseInfixExpression);
+        registerInfix(EQ, this::parseInfixExpression);
+        registerInfix(NOT_EQ, this::parseInfixExpression);
+        registerInfix(LT, this::parseInfixExpression);
+        registerInfix(GT, this::parseInfixExpression);
     }
 
     private void nextToken() {
@@ -85,6 +125,22 @@ public class Parser {
         }
     }
 
+    private Expression parseInfixExpression(Expression left) {
+        InfixExpression expression = new InfixExpression(curToken, left, curToken.getLiteral());
+
+        Precedence precedence = curPrecedence();
+        nextToken();
+        expression.setRight(parseExpression(precedence));
+
+        return expression;
+    }
+
+    private Expression parsePrefixExpression() {
+        PrefixExpression expression = new PrefixExpression(curToken, curToken.getLiteral());
+        nextToken();
+        expression.setRight(parseExpression(PREFIX));
+        return expression;
+    }
     private ExpressionStatement parseExpressionStatement() {
         ExpressionStatement stmt = new ExpressionStatement(curToken);
         stmt.setExpression(parseExpression(LOWEST));
@@ -111,11 +167,20 @@ public class Parser {
     private Expression parseExpression(Precedence precedence) {
         PrefixExprParser prefix = prefixParsers.get(curToken.getType());
         if(prefix == null) {
+            noPrefixParserError(curToken.getType());
             return null;
         }
 
         Expression leftExpr = prefix.parse();
 
+        while (!peekTokenIs(SEMICOLON) && precedence.compareTo(peekPrecedence()) < 0) {
+            InfixExprParser infixParser = infixParsers.get(peekToken.getType());
+            if(infixParser == null) {
+                return leftExpr;
+            }
+            nextToken();
+            leftExpr = infixParser.parse(leftExpr);
+        }
         return leftExpr;
 
     }

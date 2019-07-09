@@ -52,8 +52,7 @@ public enum TokenType {
     }
 
     public static TokenType lookupIdent(String ident) {
-        if(keywords.containsKey(ident)) return keywords.get(ident);
-        return IDENT;
+        return keywords.getOrDefault(ident, IDENT);
     }
 }
 

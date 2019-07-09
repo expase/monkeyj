@@ -8,7 +8,7 @@ import static com.github.monkeyj.Utils.hasItem;
 public class Program {
 
     private List<Statement> statements = new ArrayList<Statement>();
-    private List<String> errors = new ArrayList<String>();
+
 
     public String tokenLiteral() {
         if (hasItem(statements)) {
@@ -33,11 +33,4 @@ public class Program {
         return statements;
     }
 
-    public List<String> getErrors() {
-        return errors;
-    }
-
-    public void addError(String error) {
-        errors.add(error);
-    }
 }

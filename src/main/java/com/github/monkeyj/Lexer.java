@@ -67,6 +67,7 @@ public class Lexer {
             case '>':
                 token = newToken(GT, str(ch)); break;
             case ';': token = newToken(SEMICOLON, str(ch)); break;
+            case '-': token = newToken(MINUS, str(ch)); break;
             case '(': token = newToken(LPAREN, str(ch)); break;
             case ')': token = newToken(RPAREN, str(ch)); break;
             case ',': token = newToken(COMMA, str(ch)); break;
