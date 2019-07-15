@@ -3,4 +3,11 @@ return := 'return' <expression>;
 expression := <infix-expression> | <prefix-expression> | <call-expression>;
 prefix-expression := <prefix-operator><expression>;
 prefix-operator := '-'|'!'
-
+infix-expression := <expression> '+'|'-'|'*'|'/'|'=='|'!='|'>'|'<' <expression>
+integer := ['+'|'-']? [0-9]+
+keywords := 'fn'|'if'|'let'|'return'|'if'|'else'
+boolean := 'true'|'false'
+if-expression := 'if' <expression> <block-statement> |'else' <block-statement>
+block-statement := <statement>+
+statement := <expression> ';'
+program := <statement>+

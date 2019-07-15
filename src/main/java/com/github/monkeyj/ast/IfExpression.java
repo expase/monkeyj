@@ -1,4 +1,7 @@
 package com.github.monkeyj.ast;
 
-public class IfExpression {
+public class IfExpression extends Expression {
+    public void expressionNode() {
+
+    }
 }

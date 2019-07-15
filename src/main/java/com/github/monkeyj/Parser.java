@@ -17,17 +17,19 @@ import static com.github.monkeyj.TokenType.*;
 public class Parser {
     enum Precedence {
         LOWEST,
-        EQUALS,		// ==
+        EQUALS,        // ==
         LESSGREATER, // > or <
-        SUM, 		// +
-        PRODUCT,	// *
-        PREFIX, 		// -X or !X
-        CALL		// function call
+        SUM,        // +
+        PRODUCT,    // *
+        PREFIX,        // -X or !X
+        CALL        // function call
     }
+
     @FunctionalInterface
     interface PrefixExprParser {
         Expression parse();
     }
+
     @FunctionalInterface
     interface InfixExprParser {
         Expression parse(Expression expression);
@@ -60,9 +62,11 @@ public class Parser {
     private void registerPrefix(TokenType type, PrefixExprParser fn) {
         prefixParsers.put(type, fn);
     }
-    private void registerInfix(TokenType type,InfixExprParser fn) {
+
+    private void registerInfix(TokenType type, InfixExprParser fn) {
         infixParsers.put(type, fn);
     }
+
     private Precedence peekPrecedence() {
         return precedences.getOrDefault(peekToken.getType(), LOWEST);
     }
@@ -105,7 +109,7 @@ public class Parser {
 
         while (curToken.getType() != EOF) {
             Statement stmt = parseStatement();
-            if(stmt != null) {
+            if (stmt != null) {
                 program.addStatement(stmt);
             }
             nextToken();
@@ -141,6 +145,7 @@ public class Parser {
         expression.setRight(parseExpression(PREFIX));
         return expression;
     }
+
     private ExpressionStatement parseExpressionStatement() {
         ExpressionStatement stmt = new ExpressionStatement(curToken);
         stmt.setExpression(parseExpression(LOWEST));
@@ -155,7 +160,7 @@ public class Parser {
         Integer value = null;
         try {
             value = Integer.parseInt(curToken.getLiteral());
-        }catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             addError(String.format("could not parse %s as integer", curToken.getLiteral()));
             return null;
         }
@@ -166,7 +171,7 @@ public class Parser {
 
     private Expression parseExpression(Precedence precedence) {
         PrefixExprParser prefix = prefixParsers.get(curToken.getType());
-        if(prefix == null) {
+        if (prefix == null) {
             noPrefixParserError(curToken.getType());
             return null;
         }
@@ -175,7 +180,7 @@ public class Parser {
 
         while (!peekTokenIs(SEMICOLON) && precedence.compareTo(peekPrecedence()) < 0) {
             InfixExprParser infixParser = infixParsers.get(peekToken.getType());
-            if(infixParser == null) {
+            if (infixParser == null) {
                 return leftExpr;
             }
             nextToken();
@@ -193,7 +198,7 @@ public class Parser {
         ReturnStatement stmt = new ReturnStatement(curToken);
         nextToken();
 
-        while(!curTokenIs(SEMICOLON)) {
+        while (!curTokenIs(SEMICOLON)) {
             nextToken();
         }
 
@@ -201,9 +206,9 @@ public class Parser {
     }
 
     private LetStatement parseLetStatement() {
-        LetStatement stmt = new LetStatement();
+        LetStatement stmt = new LetStatement(curToken);
 
-        if(!expectPeek(IDENT)) {
+        if (!expectPeek(IDENT)) {
             return null;
         }
 
@@ -213,7 +218,7 @@ public class Parser {
             return null;
         }
 
-        while(!curTokenIs(SEMICOLON)) {
+        while (!curTokenIs(SEMICOLON)) {
             nextToken();
         }
 

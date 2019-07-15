@@ -3,7 +3,7 @@ package com.github.monkeyj.ast;
 import com.github.monkeyj.Token;
 
 public class Identifier extends Expression {
-    private Token token;
+
     private String value;
 
 

@@ -6,7 +6,8 @@ public class LetStatement extends Statement {
     private Identifier name;
     private Expression value;
 
-    public LetStatement() {
+    public LetStatement(Token token) {
+        super(token);
     }
     public Identifier getName() {
         return name;

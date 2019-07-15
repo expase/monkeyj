@@ -31,10 +31,13 @@ public class ParserTest {
         List<Statement> statements = program.getStatements();
         assertEquals(statements.get(0).getClass(), LetStatement.class);
         LetStatement stmt = (LetStatement)statements.get(0);
+        System.out.println(stmt.toString());
         assertEquals("x", stmt.getName().tokenLiteral());
         stmt = (LetStatement)statements.get(1);
+        System.out.println(stmt.toString());
         assertEquals("y", stmt.getName().tokenLiteral());
         stmt = (LetStatement)statements.get(2);
+        System.out.println(stmt.toString());
         assertEquals("foobar", stmt.getName().tokenLiteral());
     }
 
@@ -112,6 +115,20 @@ public class ParserTest {
         assertIntegerLiteral(5, ex.getRight());
     }
 
+    @Test
+    public void testOperatorPrecedenceParsing() {
+        String[][] tests = new String[][]{
+                {"-a * b", "((-a) * b)"},
+                {"a + b + c","((a + b) + c)"},
+                {"a * b * c","((a * b) * c)"},
+                {"a + b / c","(a + (b / c))"}
+        };
+
+        for(String[] items : tests) {
+            Program p = parse(items[0]).parseProgram();
+            assertEquals(items[1], p.toString());
+        }
+    }
     private void assertIntegerLiteral(int value,Expression expression) {
         assertEquals(IntegerLiteral.class, expression.getClass());
         IntegerLiteral literal = (IntegerLiteral)expression;
