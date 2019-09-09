@@ -2,6 +2,7 @@ package com.github.monkeyj;
 
 import com.github.monkeyj.ast.*;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,8 +89,14 @@ public class Parser {
         registerPrefix(INT, this::parseIntegerLiteral);
         registerPrefix(BANG, this::parsePrefixExpression);
         registerPrefix(MINUS, this::parsePrefixExpression);
+        registerPrefix(TRUE, this::parseBoolean);
+        registerPrefix(FALSE, this::parseBoolean);
+        registerPrefix(LPAREN, this::parseGroupedExpression);
+        registerPrefix(IF, this::parseIfExpression);
+        registerPrefix(FUNCTION, this::parseFunctionLiteral);
 
         registerInfix(PLUS, this::parseInfixExpression);
+        registerInfix(LPAREN, this::parseCallExpression);
         registerInfix(MINUS, this::parseInfixExpression);
         registerInfix(SLASH, this::parseInfixExpression);
         registerInfix(ASTERISK, this::parseInfixExpression);
@@ -129,7 +136,137 @@ public class Parser {
         }
     }
 
+    private Expression parseCallExpression(Expression function) {
+        CallExpression expr = new CallExpression(curToken, function);
+        expr.setArguments(parseCallArguments());
+
+        return expr;
+    }
+
+    private List<Expression> parseCallArguments() {
+        List<Expression> result = new ArrayList<>();
+        if(peekTokenIs(RPAREN)) {
+            nextToken();
+            return result;
+        }
+
+        nextToken();
+        result.add(parseExpression(LOWEST));
+
+        while(peekTokenIs(COMMA)) {
+            nextToken();
+            nextToken();
+
+            result.add(parseExpression(LOWEST));
+        }
+
+        if (!expectPeek(RPAREN)) {
+            return null;
+        }
+
+        return result;
+    }
+
+    private Expression parseFunctionLiteral() {
+        FunctionLiteral fl = new FunctionLiteral(curToken);
+        if(!expectPeek(LPAREN)) {
+            return null;
+        }
+
+        fl.setParameters(parseFunctionParameters());
+        if(!expectPeek(LBRACE)) {
+            return null;
+        }
+
+        fl.setBody(parseBlockStatement());
+
+        return fl;
+    }
+
+    public List<Identifier> parseFunctionParameters() {
+        List<Identifier> result = new ArrayList<>();
+        if (peekTokenIs(RPAREN)) {
+            nextToken();
+            return result;
+        }
+
+        nextToken();
+
+        Identifier ident = new Identifier(curToken, curToken.getLiteral());
+        result.add(ident);
+
+        while(peekTokenIs(COMMA)) {
+            nextToken();
+            nextToken();
+
+            ident = new Identifier(curToken, curToken.getLiteral());
+            result.add(ident);
+
+            if (!expectPeek(RPAREN)) {
+                return null;
+            }
+        }
+
+        return result;
+    }
+    private Expression parseGroupedExpression() {
+        nextToken();
+        Expression exp = parseExpression(LOWEST);
+        if (!expectPeek(RPAREN)) {
+            return  null;
+        }
+        return exp;
+    }
+
+    private Expression parseIfExpression() {
+        IfExpression expr = new IfExpression(curToken);
+        if (!expectPeek(LPAREN)) {
+            return null;
+        }
+        nextToken();
+
+        expr.setCondition(parseExpression(LOWEST));
+        if (!expectPeek(RPAREN)) {
+            return null;
+        }
+
+        if (!expectPeek(LBRACE)) {
+            return null;
+        }
+
+        expr.setConsequence(parseBlockStatement());
+
+        if (peekTokenIs(ELSE)) {
+            nextToken();
+
+            if (!peekTokenIs(LBRACE)) {
+                return  null;
+            }
+
+            expr.setAlternative(parseBlockStatement());
+        }
+        return expr;
+    }
+
+    private BlockStatement parseBlockStatement() {
+        BlockStatement block = new BlockStatement(curToken);
+        nextToken();
+
+        while(!curTokenIs(RBRACE)) {
+            Statement stmt = parseStatement();
+            if(stmt != null) {
+                block.addStatement(stmt);
+            }
+            nextToken();
+        }
+        return block;
+    }
+
+    private Expression parseBoolean() {
+        return new BooleanNode(curToken, curTokenIs(TRUE));
+    }
     private Expression parseInfixExpression(Expression left) {
+
         InfixExpression expression = new InfixExpression(curToken, left, curToken.getLiteral());
 
         Precedence precedence = curPrecedence();
@@ -226,6 +363,9 @@ public class Parser {
     }
 
     private boolean curTokenIs(TokenType type) {
+        if (curToken.getType() == EOF) {
+            throw new RuntimeException("end of line");
+        }
         return curToken.getType() == type;
     }
 
