@@ -13,4 +13,8 @@ public class BooleanObject implements IObject {
     public String toString() {
         return "BooleanObject(" + value + ")";
     }
+
+    public static final BooleanObject getBooleanObject(boolean nativeValue) {
+        return nativeValue ? TRUE :FALSE;
+    }
 }

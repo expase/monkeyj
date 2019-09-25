@@ -39,18 +39,28 @@ public class Interpreter implements NodeVisitor {
     }
 
     private IObject visitInfixExpression(String operator, IObject leftValue, IObject rightValue) {
-        if (leftValue instanceof IntegerObject && rightValue instanceof IntegerObject) {
-            return visitIntegerInfixExpression(operator, leftValue, rightValue);
+        Operator opr = Operator.getOperator(operator);
+        return opr.visit(leftValue, rightValue);
+    }
+
+    public IObject visit(IfExpression ifExpr) {
+        IObject condition = ifExpr.getCondition().accept(this);
+        if(isTruthy(condition)) {
+            return ifExpr.getConsequence().accept(this);
+        } else if (ifExpr.getAlternative() != null) {
+            return ifExpr.getAlternative().accept(this);
+        } else {
+            return NullObject.NULL;
         }
 
-        return NullObject.NULL;
     }
 
-    private IObject visitIntegerInfixExpression(String operator, IObject left, IObject right) {
-        Operator opr = Operator.getOperator(operator);
+    private boolean isTruthy(IObject condition) {
+        if(condition == NullObject.NULL) return  false;
+        if(condition == TRUE) return true;
+        if(condition == FALSE) return  false;
 
-        return opr.visit(left, right);
+        return true;
     }
-
 
 }

@@ -8,8 +8,7 @@ import com.github.monkeyj.value.NullObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.monkeyj.value.BooleanObject.FALSE;
-import static com.github.monkeyj.value.BooleanObject.TRUE;
+import static com.github.monkeyj.value.BooleanObject.*;
 
 public abstract class Operator<T extends IObject> {
     public abstract IObject visit(T right);
@@ -84,6 +83,68 @@ public abstract class Operator<T extends IObject> {
         }
     }
 
+    public static final class LessOperator extends Operator<IntegerObject> {
+        @Override
+        public IObject visit(IntegerObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(IntegerObject left, IntegerObject right) {
+            return getBooleanObject(left.getValue() < right.getValue());
+        }
+
+    }
+
+    public static final class GreatOperator extends Operator<IntegerObject> {
+        @Override
+        public IObject visit(IntegerObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(IntegerObject left, IntegerObject right) {
+            return getBooleanObject(left.getValue() > right.getValue());
+        }
+
+    }
+
+    public static final class EqualOperator extends Operator {
+        @Override
+        public IObject visit(IObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(IObject left, IObject right) {
+            if(left instanceof IntegerObject && right instanceof IntegerObject) {
+                return getBooleanObject(((IntegerObject)left).getValue() == ((IntegerObject)right).getValue());
+            } else if (left instanceof BooleanObject && right instanceof BooleanObject) {
+                return getBooleanObject(left != right);
+            }
+            return NullObject.NULL;
+        }
+
+    }
+
+    public static final class NotEqualOperator extends Operator {
+        @Override
+        public IObject visit(IObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(IObject left, IObject right) {
+            if(left instanceof IntegerObject && right instanceof IntegerObject) {
+                return getBooleanObject(((IntegerObject)left).getValue() != ((IntegerObject)right).getValue());
+            } else if (left instanceof BooleanObject && right instanceof BooleanObject) {
+                return getBooleanObject(left != right);
+            }
+            return NullObject.NULL;
+        }
+
+    }
+
     private final static Map<String,Operator> operators = new HashMap<String, Operator>();
     private final static NullOperator nullOperator = new NullOperator();
 
@@ -93,6 +154,11 @@ public abstract class Operator<T extends IObject> {
         operators.put("-", new MinusOperator());
         operators.put("*", new MultiplyOperator());
         operators.put("/", new DivideOperator());
+
+        operators.put("<", new LessOperator());
+        operators.put(">", new GreatOperator());
+        operators.put("==", new EqualOperator());
+        operators.put("!=", new NotEqualOperator());
 
     }
 

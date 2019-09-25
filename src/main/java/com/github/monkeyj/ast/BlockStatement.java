@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,5 +33,14 @@ public class BlockStatement extends Statement {
 
     public void addStatement(Statement statement) {
         statements.add(statement);
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        IObject result = null;
+        for(Statement stmt : statements) {
+            result = stmt.accept(visitor);
+
+        }
+        return result;
     }
 }

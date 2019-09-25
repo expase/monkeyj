@@ -234,12 +234,13 @@ public class Parser {
             return null;
         }
 
+
         expr.setConsequence(parseBlockStatement());
 
         if (peekTokenIs(ELSE)) {
             nextToken();
 
-            if (!peekTokenIs(LBRACE)) {
+            if (!expectPeek(LBRACE)) {
                 return  null;
             }
 

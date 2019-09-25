@@ -6,7 +6,7 @@ public class IntegerObject implements IObject {
     public IntegerObject(int value) {
         this.value = value;
     }
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 

@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class IfExpression extends Expression {
     private Expression condition;
@@ -49,5 +50,9 @@ public class IfExpression extends Expression {
             buf.append(alternative.toString());
         }
         return buf.toString();
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
     }
 }
