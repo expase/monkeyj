@@ -334,8 +334,9 @@ public class Parser {
     private ReturnStatement parseReturnStatement() {
         ReturnStatement stmt = new ReturnStatement(curToken);
         nextToken();
+        stmt.setReturnValue(parseExpression(LOWEST));
 
-        while (!curTokenIs(SEMICOLON)) {
+        if (peekTokenIs(SEMICOLON)) {
             nextToken();
         }
 
@@ -354,8 +355,10 @@ public class Parser {
         if (!expectPeek(ASSIGN)) {
             return null;
         }
+        nextToken();
+        stmt.setValue(parseExpression(LOWEST));
 
-        while (!curTokenIs(SEMICOLON)) {
+        if (peekTokenIs(SEMICOLON)) {
             nextToken();
         }
 

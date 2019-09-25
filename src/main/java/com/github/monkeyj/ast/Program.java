@@ -1,5 +1,7 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.value.IObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,15 @@ public class Program {
 
     public List<Statement> getStatements() {
         return statements;
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        IObject result = null;
+        for(Statement stmt : statements) {
+            result = stmt.accept(visitor);
+
+        }
+        return result;
     }
 
 }

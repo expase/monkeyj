@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class InfixExpression extends Expression {
     private Expression left;
@@ -50,5 +51,9 @@ public class InfixExpression extends Expression {
         buf.append(right.toString());
         buf.append(")");
         return buf.toString();
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
     }
 }

@@ -1,6 +1,16 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.BooleanObject;
+import com.github.monkeyj.value.IObject;
+import com.github.monkeyj.value.IntegerObject;
+import com.github.monkeyj.value.NullObject;
+import org.omg.PortableInterceptor.Interceptor;
+
+import static com.github.monkeyj.value.BooleanObject.FALSE;
+import static com.github.monkeyj.value.BooleanObject.TRUE;
+import static com.github.monkeyj.value.NullObject.NULL;
+
 
 public class PrefixExpression extends Expression {
     private String operator;
@@ -39,4 +49,11 @@ public class PrefixExpression extends Expression {
         out.append(")");
         return out.toString();
     }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
+    }
+
+
+
 }

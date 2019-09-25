@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class ExpressionStatement extends Statement {
     private Expression expression;
@@ -24,5 +25,9 @@ public class ExpressionStatement extends Statement {
 
     public void setExpression(Expression expression) {
         this.expression = expression;
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        return expression.accept(visitor);
     }
 }

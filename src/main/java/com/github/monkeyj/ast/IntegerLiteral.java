@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class IntegerLiteral extends Expression {
     private int value;
@@ -24,4 +25,9 @@ public class IntegerLiteral extends Expression {
     public String toString() {
         return token.getLiteral();
     }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
+    }
+
 }

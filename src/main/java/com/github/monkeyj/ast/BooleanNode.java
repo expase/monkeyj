@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class BooleanNode extends Expression {
     private boolean value;
@@ -14,6 +15,9 @@ public class BooleanNode extends Expression {
 
     }
 
+    public boolean getValue() {
+        return value;
+    }
     public String tokenLiteral() {
         return token.getLiteral();
     }
@@ -22,4 +26,7 @@ public class BooleanNode extends Expression {
         return token.getLiteral();
     }
 
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
+    }
 }
