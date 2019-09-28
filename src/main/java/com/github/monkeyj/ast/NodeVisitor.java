@@ -9,4 +9,6 @@ public interface NodeVisitor {
     IObject visit(PrefixExpression prefixExpr);
     IObject visit(InfixExpression infixExpr);
     IObject visit(IfExpression ifExpr);
+
+    IObject visit(ReturnStatement statement);
 }

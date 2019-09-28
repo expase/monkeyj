@@ -1,44 +1,29 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.ErrorObject;
 import com.github.monkeyj.value.IObject;
+import com.github.monkeyj.value.ReturnValueObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BlockStatement extends Statement {
-    private List<Statement> statements = new ArrayList<>();
+public class BlockStatement extends ListStatement {
 
     public BlockStatement(Token token) {
-        super(token);
-    }
-    @Override
-    public void statementNode() {
-
+        this.token = token;
     }
 
     public String tokenLiteral() {
         return token.getLiteral();
     }
 
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-
-        for(Statement statement : statements) {
-            buf.append(statement.toString());
-        }
-
-        return buf.toString();
-    }
-
-    public void addStatement(Statement statement) {
-        statements.add(statement);
-    }
-
     public IObject accept(NodeVisitor visitor) {
         IObject result = null;
         for(Statement stmt : statements) {
             result = stmt.accept(visitor);
+            if(result != null) {
+                if(result instanceof ReturnValueObject || result instanceof ErrorObject) {
+                    return result;
+                }
+            }
 
         }
         return result;

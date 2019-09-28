@@ -17,4 +17,9 @@ public class BooleanObject implements IObject {
     public static final BooleanObject getBooleanObject(boolean nativeValue) {
         return nativeValue ? TRUE :FALSE;
     }
+
+    @Override
+    public String getType() {
+        return "boolean";
+    }
 }

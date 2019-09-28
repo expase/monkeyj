@@ -9,4 +9,9 @@ public class NullObject implements IObject {
     public String toString() {
         return "NULL";
     }
+
+    @Override
+    public String getType() {
+        return "null";
+    }
 }

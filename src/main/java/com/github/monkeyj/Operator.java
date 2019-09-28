@@ -9,20 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.monkeyj.value.BooleanObject.*;
+import static com.github.monkeyj.value.ErrorObject.error;
 
 public abstract class Operator<T extends IObject> {
     public abstract IObject visit(T right);
     public abstract IObject visit(T left,T right);
 
-    public static final class NullOperator extends Operator {
-        public IObject visit(IObject right) {
-            return NullObject.NULL;
-        }
 
-        public IObject visit(IObject left, IObject right) {
-            return NullObject.NULL;
-        }
-    }
 
     public static final class BangOperator extends Operator<IObject> {
         public IObject visit(IObject right) {
@@ -42,7 +35,7 @@ public abstract class Operator<T extends IObject> {
 
     public static final class MinusOperator extends Operator<IObject> {
         public IObject visit(IObject right) {
-            if(!(right instanceof IntegerObject)) return NullObject.NULL;
+            if(!(right instanceof IntegerObject)) return error("unknown operator: -%s", right.getType());
             return new IntegerObject(-((IntegerObject)right).getValue());
         }
 
@@ -146,7 +139,7 @@ public abstract class Operator<T extends IObject> {
     }
 
     private final static Map<String,Operator> operators = new HashMap<String, Operator>();
-    private final static NullOperator nullOperator = new NullOperator();
+
 
     static {
         operators.put("!", new BangOperator());
@@ -163,9 +156,9 @@ public abstract class Operator<T extends IObject> {
     }
 
     public static Operator getOperator(String operator) {
-        Operator result =  operators.get(operator);
+        return   operators.get(operator);
 
-        return result != null ? result : nullOperator;
+
     }
 
 

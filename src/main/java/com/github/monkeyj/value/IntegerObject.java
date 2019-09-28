@@ -13,4 +13,9 @@ public class IntegerObject implements IObject {
     public String toString() {
         return "IntegerObject(" + value+")";
     }
+
+    @Override
+    public String getType() {
+        return "int";
+    }
 }
