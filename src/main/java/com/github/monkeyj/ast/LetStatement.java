@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
+import com.github.monkeyj.value.IObject;
 
 public class LetStatement extends Statement {
     private Identifier name;
@@ -43,5 +44,9 @@ public class LetStatement extends Statement {
         buf.append(";");
 
         return buf.toString();
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
     }
 }

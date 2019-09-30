@@ -2,6 +2,7 @@ package com.github.monkeyj.ast;
 
 import com.github.monkeyj.Token;
 import com.github.monkeyj.Utils;
+import com.github.monkeyj.value.IObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,5 +48,9 @@ public class FunctionLiteral extends Expression {
 
     public void setBody(BlockStatement body) {
         this.body = body;
+    }
+
+    public IObject accept(NodeVisitor visitor) {
+        return visitor.visit(this);
     }
 }

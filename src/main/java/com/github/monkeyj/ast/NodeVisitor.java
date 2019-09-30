@@ -11,4 +11,8 @@ public interface NodeVisitor {
     IObject visit(IfExpression ifExpr);
 
     IObject visit(ReturnStatement statement);
+    IObject visit(LetStatement statement);
+    IObject visit(Identifier identifier);
+
+    IObject visit(FunctionLiteral fi);
 }
