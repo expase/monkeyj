@@ -1,5 +1,6 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.value.IObject;
 
@@ -27,7 +28,8 @@ public class ExpressionStatement extends Statement {
         this.expression = expression;
     }
 
-    public IObject accept(NodeVisitor visitor) {
-        return expression.accept(visitor);
+    @Override
+    public IObject accept(NodeVisitor visitor, Context context) {
+        return expression.accept(visitor, context);
     }
 }

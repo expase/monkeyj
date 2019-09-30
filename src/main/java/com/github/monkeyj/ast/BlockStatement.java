@@ -1,5 +1,6 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.value.ErrorObject;
 import com.github.monkeyj.value.IObject;
@@ -15,10 +16,10 @@ public class BlockStatement extends ListStatement {
         return token.getLiteral();
     }
 
-    public IObject accept(NodeVisitor visitor) {
+    public IObject accept(NodeVisitor visitor, Context context) {
         IObject result = null;
         for(Statement stmt : statements) {
-            result = stmt.accept(visitor);
+            result = stmt.accept(visitor, context);
             if(result != null) {
                 if(result instanceof ReturnValueObject || result instanceof ErrorObject) {
                     return result;

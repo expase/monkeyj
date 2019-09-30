@@ -34,4 +34,16 @@ public class Function implements IObject {
         buf.append("\n}");
         return buf.toString();
     }
+
+    public List<Identifier> getParameters() {
+        return parameters;
+    }
+
+    public BlockStatement getBody() {
+        return body;
+    }
+
+    public Context getContext() {
+        return context;
+    }
 }

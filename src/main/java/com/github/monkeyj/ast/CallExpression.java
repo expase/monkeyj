@@ -1,7 +1,9 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.Utils;
+import com.github.monkeyj.value.IObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,5 +51,9 @@ public class CallExpression extends Expression {
 
     public void setArguments(List<Expression> arguments) {
         this.arguments = arguments;
+    }
+
+    public IObject accept(NodeVisitor visitor, Context context) {
+        return visitor.visit(this, context);
     }
 }

@@ -1,5 +1,6 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.value.IObject;
 
@@ -26,7 +27,7 @@ public abstract class Node {
         return token.getLiteral();
     }
 
-    public IObject accept(NodeVisitor visitor) {
+    public IObject accept(NodeVisitor visitor, Context context) {
         throw new UnsupportedOperationException();
     }
 }

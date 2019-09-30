@@ -202,9 +202,11 @@ public class Parser {
             ident = new Identifier(curToken, curToken.getLiteral());
             result.add(ident);
 
-            if (!expectPeek(RPAREN)) {
-                return null;
-            }
+
+        }
+
+        if (!expectPeek(RPAREN)) {
+            return null;
         }
 
         return result;

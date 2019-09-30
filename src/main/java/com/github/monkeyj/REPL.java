@@ -11,6 +11,7 @@ public class REPL {
     public static void start(Reader in, Writer out) {
         BufferedReader scanner = new BufferedReader(in);
         Interpreter interceptor = new Interpreter();
+        Context context = new Context(null);
         while(true) {
             System.out.print(PROMPT);
             String line = "";
@@ -28,7 +29,7 @@ public class REPL {
                 continue;
             }
 
-            IObject value = program.accept(interceptor);
+            IObject value = program.accept(interceptor, context);
             System.out.println("eval=" + value);
 
         }

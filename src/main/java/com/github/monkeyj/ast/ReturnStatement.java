@@ -1,5 +1,6 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.value.IObject;
 
@@ -33,8 +34,8 @@ public class ReturnStatement extends Statement {
         return out.toString();
     }
 
-    public IObject accept(NodeVisitor visitor) {
-        return visitor.visit(this);
+    public IObject accept(NodeVisitor visitor, Context context) {
+        return visitor.visit(this,context);
     }
 
 }

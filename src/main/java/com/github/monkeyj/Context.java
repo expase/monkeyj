@@ -7,8 +7,16 @@ import java.util.Map;
 
 public class Context {
     private Map<String, IObject> store = new HashMap<>();
-
+    private Context parent;
+    public Context(Context parent) {
+        this.parent = parent;
+    }
     public IObject get(String name) {
+
+        if(!store.containsKey(name) && parent != null) {
+            return parent.get(name);
+        }
+
         return store.get(name);
     }
 
@@ -16,4 +24,9 @@ public class Context {
         store.put(name, value);
         return value;
     }
+
+    public Context extend() {
+        return new Context(this);
+    }
+
 }

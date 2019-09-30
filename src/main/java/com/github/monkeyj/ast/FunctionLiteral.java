@@ -1,5 +1,6 @@
 package com.github.monkeyj.ast;
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.Token;
 import com.github.monkeyj.Utils;
 import com.github.monkeyj.value.IObject;
@@ -50,7 +51,8 @@ public class FunctionLiteral extends Expression {
         this.body = body;
     }
 
-    public IObject accept(NodeVisitor visitor) {
-        return visitor.visit(this);
+    @Override
+    public IObject accept(NodeVisitor visitor, Context context) {
+        return visitor.visit(this, context);
     }
 }

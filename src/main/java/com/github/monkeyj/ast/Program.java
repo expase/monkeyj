@@ -1,6 +1,7 @@
 package com.github.monkeyj.ast;
 
 
+import com.github.monkeyj.Context;
 import com.github.monkeyj.value.IObject;
 import com.github.monkeyj.value.ReturnValueObject;
 
@@ -16,10 +17,10 @@ public class Program extends ListStatement {
         return "";
     }
 
-    public IObject accept(NodeVisitor visitor) {
+    public IObject accept(NodeVisitor visitor,Context context) {
         IObject result = null;
         for(Statement stmt : statements) {
-            result = stmt.accept(visitor);
+            result = stmt.accept(visitor, context);
             switch (result.getType()) {
                 case "return" : return ((ReturnValueObject)result).getValue();
                 case "error" : return result;
