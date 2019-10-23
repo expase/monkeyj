@@ -94,6 +94,7 @@ public class Parser {
         registerPrefix(LPAREN, this::parseGroupedExpression);
         registerPrefix(IF, this::parseIfExpression);
         registerPrefix(FUNCTION, this::parseFunctionLiteral);
+        registerPrefix(STRING, this::parseStringLiteral);
 
         registerInfix(PLUS, this::parseInfixExpression);
         registerInfix(LPAREN, this::parseCallExpression);
@@ -134,6 +135,10 @@ public class Parser {
             default:
                 return parseExpressionStatement();
         }
+    }
+
+    private Expression parseStringLiteral() {
+        return new StringLiteral(curToken, curToken.getLiteral());
     }
 
     private Expression parseCallExpression(Expression function) {

@@ -1,9 +1,6 @@
 package com.github.monkeyj;
 
-import com.github.monkeyj.value.BooleanObject;
-import com.github.monkeyj.value.IObject;
-import com.github.monkeyj.value.IntegerObject;
-import com.github.monkeyj.value.NullObject;
+import com.github.monkeyj.value.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,13 +43,20 @@ public abstract class Operator<T extends IObject> {
         }
     }
 
-    public static final class AddOperator extends Operator<IntegerObject> {
-        public IObject visit(IntegerObject right) {
+    public static final class AddOperator extends Operator<IObject> {
+        public IObject visit(IObject right) {
             throw new UnsupportedOperationException();
         }
 
-        public IObject visit(IntegerObject left, IntegerObject right) {
-            return new IntegerObject(left.getValue() + right.getValue());
+        public IObject visit(IObject left, IObject right) {
+            if(left instanceof IntegerObject && right instanceof IntegerObject) {
+                return new IntegerObject(((IntegerObject)left).getValue() + ((IntegerObject)right).getValue());
+            } else if (left instanceof StringObject && right instanceof StringObject) {
+                return new StringObject(((StringObject)left).getValue() + ((StringObject)right).getValue());
+            } else {
+                return error("type mismatch for %s - %s", left.getType(), right.getType());
+            }
+
         }
     }
 

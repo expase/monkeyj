@@ -9,6 +9,8 @@ import java.util.List;
 
 import static com.github.monkeyj.value.BooleanObject.FALSE;
 import static com.github.monkeyj.value.BooleanObject.TRUE;
+import static com.github.monkeyj.value.Builtin.getBuiltin;
+import static com.github.monkeyj.value.Builtin.isBuiltin;
 import static com.github.monkeyj.value.ErrorObject.error;
 import static com.github.monkeyj.value.NullObject.NULL;
 
@@ -34,6 +36,9 @@ public class Interpreter implements NodeVisitor {
         return opr != null ? opr.visit(rightValue) : error("unknown operator: %s %s", operator, rightValue.getType());
     }
 
+    public IObject visit(StringLiteral si,Context context) {
+        return new StringObject(si.getValue());
+    }
     public IObject visit(InfixExpression infixExpr, Context context) {
         IObject leftValue = infixExpr.getLeft().accept(this, context);
         IObject rightValue = infixExpr.getRight().accept(this, context);
@@ -77,7 +82,16 @@ public class Interpreter implements NodeVisitor {
 
     public IObject visit(Identifier identifier, Context context) {
         IObject result = context.get(identifier.getValue());
-        return result == null ? error("identifier not found : %s", identifier.getValue()) : result;
+
+        if(result != null) {
+            return result;
+        }
+
+        if(isBuiltin(identifier.getValue())) {
+            return getBuiltin(identifier.getValue());
+        }
+
+        return error("identifier not found : %s", identifier.getValue());
     }
 
     public IObject visit(ReturnStatement statement, Context context) {
@@ -103,18 +117,30 @@ public class Interpreter implements NodeVisitor {
     }
 
     private IObject applyCall(IObject fn, List<IObject> args) {
-        if (!(fn instanceof Function)) return error("not a function: %s", fn.getType());
-        Function function = (Function) fn;
-        Context functionContext = extendFunctionContext(function, args);
+        switch (fn.getType()) {
+            case "function": {
+                Function function = (Function) fn;
+                Context functionContext = extendFunctionContext(function, args);
 
-        IObject callValue = function.getBody().accept(this, functionContext);
+                IObject evaluated = function.getBody().accept(this, functionContext);
 
-        if(callValue instanceof ReturnValueObject) {
-            return ((ReturnValueObject)callValue).getValue();
+                return unwrapReturnValue(evaluated);
+            }
+            case "builtin": {
+                Builtin builtin = (Builtin)fn;
+                return builtin.execute(args);
+            }
+            default:
+                return error("not a function: %s", fn.getType());
+        }
+    }
+
+    private IObject unwrapReturnValue(IObject evaluated) {
+        if(evaluated instanceof ReturnValueObject) {
+            return ((ReturnValueObject)evaluated).getValue();
         }
 
-        return callValue;
-
+        return evaluated;
     }
 
     private Context extendFunctionContext(Function function, List<IObject> args) {

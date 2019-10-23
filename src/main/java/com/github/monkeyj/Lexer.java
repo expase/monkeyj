@@ -74,6 +74,7 @@ public class Lexer {
             case '+': token = newToken(PLUS, str(ch)); break;
             case '{': token = newToken(LBRACE, str(ch)); break;
             case '}': token = newToken(RBRACE, str(ch)); break;
+            case '"': token = newToken(STRING, readString());break;
             case 0: {
                 token.setLiteral("");
                 token.setType(EOF);
@@ -107,7 +108,15 @@ public class Lexer {
         return buf.toString();
     }
 
-
+    private String readString() {
+        StringBuilder buf  = new StringBuilder();
+        while(true) {
+            readChar();
+            if(ch == '"') break;
+            buf.append(ch);
+        }
+        return buf.toString();
+    }
 
     private String readNumber() {
         StringBuilder buf = new StringBuilder();

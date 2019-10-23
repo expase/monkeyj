@@ -9,6 +9,7 @@ public enum TokenType {
 
     IDENT,
     INT,
+    STRING,
 
     ASSIGN,
     PLUS,

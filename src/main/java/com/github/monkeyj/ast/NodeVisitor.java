@@ -17,4 +17,6 @@ public interface NodeVisitor {
 
     IObject visit(FunctionLiteral fi, Context context);
     IObject visit(CallExpression call, Context context);
+
+    IObject visit(StringLiteral si,Context context);
 }
