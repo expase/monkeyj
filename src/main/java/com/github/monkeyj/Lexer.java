@@ -64,6 +64,8 @@ public class Lexer {
                 token = newToken(SLASH, str(ch)); break;
             case '*':
                 token = newToken(ASTERISK, str(ch)); break;
+            case '<':
+                token = newToken(LT, str(ch)); break;
             case '>':
                 token = newToken(GT, str(ch)); break;
             case ';': token = newToken(SEMICOLON, str(ch)); break;
