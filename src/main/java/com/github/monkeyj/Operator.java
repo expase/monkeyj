@@ -142,6 +142,30 @@ public abstract class Operator<T extends IObject> {
 
     }
 
+    public static final class AndOperator extends Operator<BooleanObject> {
+        @Override
+        public IObject visit(BooleanObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(BooleanObject left, BooleanObject right) {
+            return getBooleanObject(left.getValue() && right.getValue());
+        }
+    }
+
+    public static final class OrOperator extends Operator<BooleanObject> {
+        @Override
+        public IObject visit(BooleanObject right) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public IObject visit(BooleanObject left, BooleanObject right) {
+            return getBooleanObject(left.getValue() || right.getValue());
+        }
+    }
+
     private final static Map<String,Operator> operators = new HashMap<String, Operator>();
 
 
@@ -157,6 +181,8 @@ public abstract class Operator<T extends IObject> {
         operators.put("==", new EqualOperator());
         operators.put("!=", new NotEqualOperator());
 
+        operators.put("&&", new AndOperator());
+        operators.put("||", new OrOperator());
     }
 
     public static Operator getOperator(String operator) {

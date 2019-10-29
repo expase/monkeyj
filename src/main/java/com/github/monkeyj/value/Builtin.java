@@ -34,6 +34,8 @@ public class Builtin implements IObject {
             switch (arg.getType()) {
                 case "string":
                     return new IntegerObject(((StringObject)arg).getValue().length());
+                case "array":
+                    return new IntegerObject(((Array)arg).getElements().size());
                 default:
                     return error("argument to 'len' not supported, got %s", arg.getType());
             }

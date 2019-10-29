@@ -23,12 +23,14 @@ public class REPL {
 
             Lexer l = new Lexer(line);
             Parser parser = new Parser(l);
+
             Program program = parser.parseProgram();
+
             if(parser.getErrors().size() > 0) {
                 printParseErrors(parser);
                 continue;
             }
-
+//
             IObject value = program.accept(interceptor, context);
             System.out.println("eval=" + value);
 

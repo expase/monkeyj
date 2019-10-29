@@ -75,6 +75,20 @@ public class Lexer {
             case '{': token = newToken(LBRACE, str(ch)); break;
             case '}': token = newToken(RBRACE, str(ch)); break;
             case '"': token = newToken(STRING, readString());break;
+            case '[': token = newToken(LBRACKET, str(ch));break;
+            case ']': token = newToken(RBRACKET, str(ch));break;
+            case '&': {
+                if (peekChar() == '&') {
+                    readChar();
+                    token = newToken(AND, "&&");
+                }
+            } break;
+            case '|': {
+                if (peekChar() == '|') {
+                    readChar();
+                    token = newToken(OR, "||");
+                }
+            } break;
             case 0: {
                 token.setLiteral("");
                 token.setType(EOF);

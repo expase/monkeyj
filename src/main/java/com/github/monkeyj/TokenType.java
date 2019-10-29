@@ -32,11 +32,15 @@ public enum TokenType {
 
     LBRACE,
     RBRACE,
+    LBRACKET,
+    RBRACKET,
 
     FUNCTION,
     LET,
     TRUE,
     FALSE,
+    AND,
+    OR,
     IF,
     ELSE,
     RETURN;

@@ -12,18 +12,24 @@ import java.util.stream.Stream;
 
 
 import static com.github.monkeyj.Parser.Precedence.*;
+
+
 import static com.github.monkeyj.TokenType.*;
 
 
 public class Parser {
     enum Precedence {
+
         LOWEST,
+        ANDOR,
         EQUALS,        // ==
-        LESSGREATER, // > or <
+        LESSGREATER, // > or <,
+
         SUM,        // +
         PRODUCT,    // *
         PREFIX,        // -X or !X
-        CALL        // function call
+        CALL,        // function call
+        INDEX       //array[index]
     }
 
     @FunctionalInterface
@@ -44,15 +50,21 @@ public class Parser {
     private List<String> errors = new ArrayList<>();
     private Map<TokenType, Precedence> precedences = Stream.of(
             new Object[][]{
+
                     {EQ, EQUALS},
                     {NOT_EQ, EQUALS},
+                    {AND, ANDOR},
+                    {OR, ANDOR},
                     {LT, LESSGREATER},
                     {GT, LESSGREATER},
+
                     {PLUS, SUM},
                     {MINUS, SUM},
                     {SLASH, PRODUCT},
                     {ASTERISK, PRODUCT},
-                    {LPAREN, CALL}
+
+                    {LPAREN, CALL},
+                    {LBRACKET, INDEX}
             }
     ).collect(Collectors.toMap(data -> (TokenType) data[0], data -> (Precedence) data[1]));
 
@@ -95,8 +107,12 @@ public class Parser {
         registerPrefix(IF, this::parseIfExpression);
         registerPrefix(FUNCTION, this::parseFunctionLiteral);
         registerPrefix(STRING, this::parseStringLiteral);
+        registerPrefix(LBRACKET, this::parseArrayLiteral);
 
         registerInfix(PLUS, this::parseInfixExpression);
+        registerInfix(LBRACKET, this::parseIndexExpression);
+        registerInfix(AND, this::parseInfixExpression);
+        registerInfix(OR, this::parseInfixExpression);
         registerInfix(LPAREN, this::parseCallExpression);
         registerInfix(MINUS, this::parseInfixExpression);
         registerInfix(SLASH, this::parseInfixExpression);
@@ -137,20 +153,41 @@ public class Parser {
         }
     }
 
+    private Expression parseArrayLiteral() {
+        ArrayLiteral array = new ArrayLiteral(curToken);
+        array.setElements(parseExpressionList(RBRACKET));
+
+        return array;
+    }
+
+    private Expression parseIndexExpression(Expression left) {
+        IndexExpression expr = new IndexExpression(curToken);
+        expr.setLeft(left);
+
+        nextToken();
+
+        expr.setIndex(parseExpression(LOWEST));
+        if(!expectPeek(RBRACKET)) {
+            return null;
+        }
+
+        return expr;
+    }
+
     private Expression parseStringLiteral() {
         return new StringLiteral(curToken, curToken.getLiteral());
     }
 
     private Expression parseCallExpression(Expression function) {
         CallExpression expr = new CallExpression(curToken, function);
-        expr.setArguments(parseCallArguments());
+        expr.setArguments(parseExpressionList(RPAREN));
 
         return expr;
     }
 
-    private List<Expression> parseCallArguments() {
+    private List<Expression> parseExpressionList(TokenType end) {
         List<Expression> result = new ArrayList<>();
-        if(peekTokenIs(RPAREN)) {
+        if(peekTokenIs(end)) {
             nextToken();
             return result;
         }
@@ -165,7 +202,7 @@ public class Parser {
             result.add(parseExpression(LOWEST));
         }
 
-        if (!expectPeek(RPAREN)) {
+        if (!expectPeek(end)) {
             return null;
         }
 
